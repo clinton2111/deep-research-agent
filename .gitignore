@@ -1,0 +1,34 @@
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+
+# Build output
+build/
+dist/
+
+# Frontend dependencies and caches
+node_modules/
+.vite/
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+/src/deep_research_agent/output
+/AGENTS.md
+/PLAYBOOK.md

@@ -1,0 +1,28 @@
+[project]
+name = "deep-research-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Clinton D", email = "3950377+clinton2111@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastmcp>=4.1.8",
+    "langchain>=1.4.10",
+    "langchain-core>=1.7.7",
+    "langchain-google-genai>=4.4.3",
+    "langchain-openai>=1.7.4",
+    "langchain-tavily>=0.2.18",
+    "langgraph>=1.2.20",
+    "langsmith>=0.14.17",
+    "python-dotenv>=1.2.4",
+    "resend>=2.53.2",
+]
+
+[project.scripts]
+deep-research-agent = "deep_research_agent:main"
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14.0"]
+build-backend = "uv_build"
