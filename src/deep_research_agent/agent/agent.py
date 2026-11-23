@@ -1,47 +1,25 @@
-from typing import Literal
+import asyncio
+from uuid import uuid4
 
-from langgraph.graph import END, START, StateGraph
-
-from deep_research_agent.agent.utils.nodes import (
-    email_report,
-    extract,
-    quality_control,
-    research,
-    rewrite_prompt,
-    save_file,
-    synthesis,
-)
-from deep_research_agent.agent.utils.state import State
-
-builder = StateGraph(State)
-
-# Nodes
-builder.add_node("research", research)
-builder.add_node("extract", extract)
-builder.add_node("synthesis", synthesis)
-builder.add_node("quality_control", quality_control)
-builder.add_node("rewrite_prompt", rewrite_prompt)
-builder.add_node("save_file", save_file)
-builder.add_node("email_report", email_report)
+from .graph import graph
+from .utils.state import InputState
 
 
-# Edges
-def quality_check_route(state: State) -> Literal["rewrite_prompt", "save_file"]:
-    if state["quality_decision"] == "GOOD":
-        return "save_file"
-    else:
-        return "rewrite_prompt"
+async def main() -> None:
+    question = "What is LangGraph?"
+    initial_state: InputState = {
+        "original_question": question,
+        "research_prompt": question,
+    }
+
+    config = {"configurable": {"thread_id": str(uuid4())}}
+    result = await graph.ainvoke(initial_state, config=config)
+    print(f"Report: {result['final_report']['title']}")
+    print(f"Quality: {result['quality_decision']}")
+    print(f"Email: {result['email_status']}")
+    if result["email_error"]:
+        print(result["email_error"])
 
 
-builder.add_edge(START, "research")
-builder.add_edge("research", "extract")
-builder.add_edge("extract", "synthesis")
-builder.add_edge("synthesis", "quality_control")
-builder.add_conditional_edges("quality_control", quality_check_route)
-builder.add_edge("rewrite_prompt", "research")
-builder.add_edge("save_file", "email_report")
-builder.add_edge("email_report", END)
-
-graph = builder.compile()
-
-# graph.get_graph().draw_mermaid_png(output_file_path="graph.png")
+if __name__ == "__main__":
+    asyncio.run(main())

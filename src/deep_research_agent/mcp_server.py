@@ -1,10 +1,11 @@
 import os
+from base64 import b64encode
 from pathlib import Path
 
 import resend
 from dotenv import load_dotenv
 from fastmcp import FastMCP
-from resend.exceptions import ResendError
+from markdown_it import MarkdownIt
 
 load_dotenv()
 
@@ -40,19 +41,25 @@ def send_email(content: dict[str, str]):
     """
 
     resend.api_key = os.environ["RESEND_API_KEY"]
+    markdown = content["message"]
+    html = MarkdownIt("js-default").render(markdown)
 
     params: resend.Emails.SendParams = {
         "from": "Deep Research Bot <deep-research-bot@cd21.dev>",
         "to": [os.environ["RECEPIENT_EMAIL"]],
         "subject": content["subject"],
-        "html": content["message"],
+        "html": html,
+        "text": markdown,
+        "attachments": [
+            {
+                "filename": "research_report.md",
+                "content": b64encode(markdown.encode("utf-8")).decode("ascii"),
+                "content_type": "text/markdown",
+            }
+        ],
     }
 
-    try:
-        email = resend.Emails.send(params)
-        print(email)
-    except ResendError as error:
-        print(error)
+    resend.Emails.send(params)
 
 
 if __name__ == "__main__":

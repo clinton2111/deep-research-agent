@@ -2,13 +2,24 @@ from typing import TypedDict
 
 
 class SearchResult(TypedDict):
+    id: int
     url: str
     title: str
     content: str
     score: float
 
 
-class State(TypedDict):
+class SynthesizedReport(TypedDict):
+    title: str
+    content: str
+
+
+class InputState(TypedDict):
+    original_question: str
+    research_prompt: str
+
+
+class State(InputState):
     """Hold the data shared by research graph nodes.
 
     Fields:
@@ -25,15 +36,17 @@ class State(TypedDict):
             read by the conditional edge.
         final_report: Report to save and email. Set when quality is good;
             read by the Save and Email nodes.
+        email_status: "sent" or "failed" after the email node runs.
+        email_error: Error message when email delivery fails; empty on success.
         is_complete: Whether the agent can finish. Written by Quality Check;
             read at the end of the graph.
     """
 
-    original_question: str
-    research_prompt: str
     search_results: list[SearchResult]
-    synthesized_report: str
+    synthesized_report: SynthesizedReport
     quality_decision: str
     retry_count: int
-    final_report: str
+    final_report: SynthesizedReport
+    email_status: str
+    email_error: str
     is_complete: bool
