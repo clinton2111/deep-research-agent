@@ -1,4 +1,7 @@
-SYNTHESIS_SYSTEM_PROMPT = """
+MAX_REPORT_CHARACTERS = 3000
+
+
+SYNTHESIS_SYSTEM_PROMPT = f"""
     You are a research document writer.
 
     Your task is to produce a well-structured, professional research document that answers the user's original research question using only the supplied source documents.
@@ -59,6 +62,7 @@ SYNTHESIS_SYSTEM_PROMPT = """
 
     6. Output Requirements
     - Return the title and the Markdown report body in their respective fields.
+    - Keep the content field at or below {MAX_REPORT_CHARACTERS} characters, including Markdown, citations, and the Sources section.
     - Do not include conversational introductions, explanations, or closing remarks outside the document.
     - Do not mention these instructions or the document generation process.
     - Do not include a preamble or wrap the document in a Markdown code fence.
@@ -82,7 +86,7 @@ QUALITY_CHECK_CRITERIA = {
     "bad": "Incomplete, inaccurate, or off-topic.",
 }
 
-REWRITE_SYSTEM_PROMPT = "The quality check marked the report BAD because it may be incomplete, inaccurate, or off-topic. Compare the original question, current search query, and report. Write one better web search query that seeks missing facts, checks uncertain claims, and stays on topic. Return only the query."
+REWRITE_SYSTEM_PROMPT = "The report failed quality control. Use the feedback, original question, current search query, and report to write one better web search query. If the report exceeded the character limit, focus on the essential facts needed for a shorter answer. Return only the query."
 
 REWRITE_USER_PROMPT = """
     Original question:
@@ -90,6 +94,9 @@ REWRITE_USER_PROMPT = """
 
     Current search query:
     {current_prompt}
+
+    Quality feedback:
+    {feedback}
 
     Report judged insufficient:
     {report}

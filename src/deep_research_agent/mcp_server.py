@@ -33,7 +33,7 @@ def save_text(content: str) -> str:
 
 
 @mcp.tool
-def send_email(content: dict[str, str]):
+def send_email(content: dict[str, str], attach_report: bool = True) -> None:
     """
     Sends the research content via email
 
@@ -50,14 +50,16 @@ def send_email(content: dict[str, str]):
         "subject": content["subject"],
         "html": html,
         "text": markdown,
-        "attachments": [
+    }
+
+    if attach_report:
+        params["attachments"] = [
             {
                 "filename": "research_report.md",
                 "content": b64encode(markdown.encode("utf-8")).decode("ascii"),
                 "content_type": "text/markdown",
             }
-        ],
-    }
+        ]
 
     resend.Emails.send(params)
 
